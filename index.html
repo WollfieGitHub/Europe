@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Final Countdown</title>
+<meta name="description" content="A countdown to the last hour of an eternal war. The morning peace was written on the wall." />
+<meta property="og:title" content="The Final Countdown" />
+<meta property="og:description" content="When the last hour falls, the guns go quiet. A countdown to peace." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Archivo+Black&family=Permanent+Marker&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --concrete-0:#0d0e11;
+    --concrete-1:#16181d;
+    --concrete-2:#222530;
+    --dawn-1:#3a2a3f;
+    --dawn-2:#7a3b4a;
+    --dawn-3:#c9683f;
+    --dawn-4:#f2b04a;
+    --spray-red:#e63030;
+    --spray-red-2:#b81f1f;
+    --bone:#efe9df;
+    --bone-dim:#b8b1a6;
+    --stencil:#f4f1ea;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  html,body{height:100%;}
+
+  body{
+    background:var(--concrete-0);
+    color:var(--bone);
+    font-family:'Special Elite', 'Courier New', monospace;
+    min-height:100%;
+    overflow-x:hidden;
+    position:relative;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ---------- The concrete wall ---------- */
+  .wall{
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    background:
+      radial-gradient(120% 90% at 50% 120%, rgba(242,176,74,0.16), transparent 55%),
+      radial-gradient(140% 120% at 50% 130%, rgba(201,104,63,0.20), transparent 60%),
+      linear-gradient(180deg, var(--concrete-0) 0%, var(--concrete-1) 38%, var(--dawn-1) 78%, var(--dawn-2) 100%);
+  }
+  /* dawn glow rising from the horizon */
+  .horizon{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    height:42vh;
+    z-index:-2;
+    background:radial-gradient(80% 130% at 50% 130%, rgba(242,176,74,0.35), rgba(201,104,63,0.12) 45%, transparent 70%);
+    filter:blur(4px);
+    animation:breathe 9s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes breathe{
+    0%,100%{opacity:.75; transform:translateY(6px) scale(1);}
+    50%{opacity:1; transform:translateY(0) scale(1.03);}
+  }
+
+  /* concrete grain + cracks via SVG overlay */
+  .grain{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    opacity:.5;
+    mix-blend-mode:overlay;
+    pointer-events:none;
+  }
+  .cracks{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    opacity:.35;
+    pointer-events:none;
+  }
+
+  /* vignette */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background:radial-gradient(120% 100% at 50% 35%, transparent 55%, rgba(0,0,0,0.55) 100%);
+  }
+
+  /* ---------- Layout ---------- */
+  .stage{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:clamp(1.5rem, 4vw, 4rem) 1.2rem 3.5rem;
+    gap:clamp(1.2rem, 3vh, 2.4rem);
+    text-align:center;
+  }
+
+  /* stencilled kicker */
+  .kicker{
+    font-family:'Archivo Black', sans-serif;
+    letter-spacing:.55em;
+    text-transform:uppercase;
+    font-size:clamp(.6rem,1.6vw,.9rem);
+    color:var(--bone-dim);
+    padding-left:.55em;
+    opacity:0;
+    transform:translateY(10px);
+    animation:rise .9s .2s ease-out forwards;
+  }
+  .kicker .dot{color:var(--spray-red);}
+
+  /* ---------- The title ---------- */
+  .title-wrap{
+    position:relative;
+    line-height:.82;
+    opacity:0;
+    animation:sprayIn 1.1s .35s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .title{
+    font-family:'Anton', 'Archivo Black', sans-serif;
+    text-transform:uppercase;
+    font-size:clamp(3.1rem, 13.5vw, 12rem);
+    letter-spacing:.01em;
+    color:var(--stencil);
+    text-shadow:
+      0 2px 0 rgba(0,0,0,.35),
+      6px 8px 0 rgba(0,0,0,.28);
+    position:relative;
+  }
+  .title .line{display:block;}
+  .title .final{
+    position:relative;
+    display:inline-block;
+  }
+  /* spray-paint red slash across "FINAL" */
+  .title .final::after{
+    content:"";
+    position:absolute;
+    left:-4%;
+    right:-4%;
+    top:52%;
+    height:.13em;
+    background:linear-gradient(90deg, transparent, var(--spray-red) 12%, var(--spray-red-2) 88%, transparent);
+    transform:rotate(-2.2deg);
+    border-radius:40% 60% 55% 45%;
+    filter:blur(.4px);
+    box-shadow:0 0 14px rgba(230,48,48,.45);
+    transform-origin:left center;
+    animation:slash .7s 1.15s cubic-bezier(.6,0,.1,1) both;
+  }
+  @keyframes slash{ from{transform:rotate(-2.2deg) scaleX(0);} to{transform:rotate(-2.2deg) scaleX(1);} }
+
+  .title .countdown-word{
+    color:transparent;
+    -webkit-text-stroke:2px var(--bone);
+    text-stroke:2px var(--bone);
+    text-shadow:none;
+  }
+
+  /* ---------- The clock ---------- */
+  .clock{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:center;
+    gap:clamp(.6rem, 2.4vw, 2.4rem);
+    opacity:0;
+    animation:rise 1s .8s ease-out forwards;
+  }
+  .unit{
+    position:relative;
+    min-width:clamp(3.6rem, 15vw, 8.5rem);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .num{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(2.9rem, 12vw, 9rem);
+    line-height:1;
+    color:var(--bone);
+    font-variant-numeric:tabular-nums;
+    letter-spacing:.02em;
+    text-shadow:0 3px 0 rgba(0,0,0,.3), 0 0 26px rgba(242,176,74,.12);
+    transition:transform .35s cubic-bezier(.2,1.4,.4,1);
+  }
+  .num.tick{ animation:tick .5s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes tick{
+    0%{transform:translateY(-.06em) scale(1.06); color:var(--dawn-4);}
+    100%{transform:none;}
+  }
+  .label{
+    margin-top:.55rem;
+    font-family:'Archivo Black', sans-serif;
+    text-transform:uppercase;
+    font-size:clamp(.5rem, 1.5vw, .78rem);
+    letter-spacing:.32em;
+    color:var(--bone-dim);
+    padding-left:.32em;
+  }
+  .sep{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(2.2rem, 9vw, 7rem);
+    line-height:1;
+    color:var(--spray-red);
+    align-self:flex-start;
+    margin-top:clamp(.2rem,1vw,.6rem);
+    animation:blink 2s steps(2,jump-none) infinite;
+    text-shadow:0 0 18px rgba(230,48,48,.5);
+  }
+  @keyframes blink{ 50%{opacity:.25;} }
+
+  /* ---------- The dove (Banksy stencil, spray red) ---------- */
+  .dove{
+    width:clamp(74px, 16vw, 150px);
+    height:auto;
+    opacity:0;
+    animation:flyIn 1.6s 1.1s cubic-bezier(.2,.8,.2,1) forwards;
+    filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));
+  }
+  .dove .body{ fill:var(--stencil); }
+  .dove .branch{ stroke:#6f8f4f; }
+  .dove .leaf{ fill:#7ea24d; }
+  @keyframes flyIn{
+    0%{opacity:0; transform:translateX(-40px) translateY(14px) rotate(-8deg);}
+    60%{opacity:1;}
+    100%{opacity:1; transform:none;}
+  }
+  .dove-hover{ animation:hover 6s ease-in-out infinite; }
+  @keyframes hover{ 0%,100%{transform:translateY(0) rotate(-1deg);} 50%{transform:translateY(-10px) rotate(1.5deg);} }
+
+  /* ---------- Poem ---------- */
+  .poem{
+    max-width:34rem;
+    font-size:clamp(.92rem, 2.3vw, 1.18rem);
+    line-height:1.85;
+    color:var(--bone-dim);
+    opacity:0;
+    animation:rise 1.2s 1.4s ease-out forwards;
+  }
+  .poem p{ margin:0; }
+  .poem .em{ color:var(--bone); }
+  .poem .redword{
+    color:var(--spray-red);
+    font-family:'Permanent Marker', cursive;
+    font-size:1.15em;
+    letter-spacing:.02em;
+  }
+
+  /* target line / signature */
+  .target{
+    font-family:'Archivo Black', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.28em;
+    font-size:clamp(.56rem,1.5vw,.8rem);
+    color:var(--bone-dim);
+    padding-left:.28em;
+    opacity:0;
+    animation:rise 1.2s 1.7s ease-out forwards;
+  }
+  .target b{ color:var(--dawn-4); font-weight:400; }
+
+  .signature{
+    font-family:'Permanent Marker', cursive;
+    color:var(--spray-red);
+    transform:rotate(-4deg);
+    font-size:clamp(1rem,3vw,1.5rem);
+    opacity:0;
+    animation:rise 1.2s 2s ease-out forwards;
+    text-shadow:0 0 14px rgba(230,48,48,.35);
+  }
+
+  /* ---------- The message when time is up ---------- */
+  .arrived{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:1.4rem;
+  }
+  body.done .clock,
+  body.done .target{ display:none; }
+  body.done .arrived{ display:flex; }
+  .arrived .peace{
+    font-family:'Anton', sans-serif;
+    text-transform:uppercase;
+    font-size:clamp(3rem,16vw,11rem);
+    color:var(--dawn-4);
+    line-height:.9;
+    text-shadow:0 0 40px rgba(242,176,74,.5);
+    animation:glow 3s ease-in-out infinite;
+  }
+  @keyframes glow{ 50%{text-shadow:0 0 70px rgba(242,176,74,.85);} }
+
+  /* ---------- Drips ---------- */
+  .drip{
+    position:absolute;
+    top:0;
+    width:3px;
+    background:linear-gradient(180deg, var(--spray-red), transparent);
+    border-radius:0 0 50% 50%;
+    opacity:.55;
+    transform-origin:top;
+    animation:drip 5s ease-in infinite;
+  }
+  .drip::after{
+    content:"";
+    position:absolute;
+    bottom:-6px; left:50%;
+    width:7px; height:9px;
+    transform:translateX(-50%);
+    background:var(--spray-red);
+    border-radius:50%;
+    opacity:.8;
+  }
+  @keyframes drip{
+    0%{transform:scaleY(0); opacity:0;}
+    15%{opacity:.6;}
+    100%{transform:scaleY(1); opacity:.15;}
+  }
+
+  /* floating embers/ash */
+  .embers{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+  .ember{
+    position:absolute;
+    bottom:-10px;
+    width:3px; height:3px;
+    border-radius:50%;
+    background:var(--dawn-4);
+    opacity:0;
+    animation:float linear infinite;
+    box-shadow:0 0 6px rgba(242,176,74,.7);
+  }
+  @keyframes float{
+    0%{ transform:translateY(0) translateX(0); opacity:0;}
+    10%{opacity:.9;}
+    90%{opacity:.6;}
+    100%{ transform:translateY(-105vh) translateX(var(--drift,20px)); opacity:0;}
+  }
+
+  @keyframes rise{ to{opacity:1; transform:none;} }
+  @keyframes sprayIn{
+    0%{opacity:0; transform:scale(1.08); filter:blur(8px);}
+    60%{opacity:1; filter:blur(0);}
+    100%{opacity:1; transform:none;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001s !important; animation-iteration-count:1 !important;}
+  }
+
+  footer{
+    position:fixed;
+    bottom:.7rem; left:0; right:0;
+    text-align:center;
+    font-family:'Special Elite', monospace;
+    font-size:.66rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:rgba(184,177,166,.4);
+    z-index:2;
+    pointer-events:none;
+  }
+</style>
+</head>
+<body>
+  <div class="wall"></div>
+  <div class="horizon"></div>
+
+  <!-- concrete grain -->
+  <svg class="grain" xmlns="http://www.w3.org/2000/svg">
+    <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="100%" height="100%" filter="url(#noise)"/>
+  </svg>
+
+  <!-- hairline cracks in the wall -->
+  <svg class="cracks" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#000" stroke-opacity="0.5" fill="none" stroke-width="1">
+      <path d="M120,0 L138,140 L96,250 L150,360 L110,520 L170,700 L120,900"/>
+      <path d="M138,140 L210,180 M96,250 L40,300 M150,360 L235,400 M110,520 L55,560"/>
+      <path d="M1320,0 L1300,120 L1360,220 L1290,340 L1350,470 L1280,640 L1330,900"/>
+      <path d="M1300,120 L1230,150 M1360,220 L1420,270 M1290,340 L1210,380"/>
+      <path d="M720,760 L700,820 L740,900 M700,820 L640,860 M740,900 L790,850"/>
+    </g>
+  </svg>
+
+  <div class="embers" id="embers"></div>
+
+  <main class="stage">
+    <div class="kicker">An eternal war &nbsp;<span class="dot">&#9724;</span>&nbsp; the last hour</div>
+
+    <div class="title-wrap">
+      <h1 class="title">
+        <span class="line">The <span class="final">Final</span></span>
+        <span class="line countdown-word">Countdown</span>
+      </h1>
+    </div>
+
+    <svg class="dove" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" aria-label="A dove of peace carrying an olive branch">
+      <g class="dove-hover">
+        <!-- stylised peace dove (stencil) -->
+        <path class="body" d="M18,96
+          C10,86 20,74 34,78
+          C40,60 58,50 78,54
+          C86,40 104,34 120,42
+          C120,42 150,20 176,24
+          C160,34 156,44 158,52
+          C170,52 182,60 188,72
+          C176,70 168,72 160,78
+          C168,90 166,104 154,112
+          C150,100 142,96 134,96
+          C130,112 116,124 96,124
+          C104,116 106,108 104,102
+          C86,112 60,112 44,102
+          C40,110 30,112 22,108
+          C28,104 30,98 28,94
+          C24,96 20,96 18,96 Z"/>
+        <!-- eye -->
+        <circle cx="150" cy="44" r="2.6" fill="#0d0e11"/>
+        <!-- olive branch in beak -->
+        <path class="branch" d="M176,44 C196,42 210,48 220,58" fill="none" stroke-width="2.4" stroke-linecap="round"/>
+        <path class="leaf" d="M198,42 q7,-8 15,-4 q-5,8 -15,4 Z"/>
+        <path class="leaf" d="M210,50 q8,-6 15,-1 q-6,7 -15,1 Z"/>
+      </g>
+    </svg>
+
+    <div class="clock" id="clock" role="timer" aria-live="off">
+      <div class="unit"><span class="num" id="days">00</span><span class="label">Days</span></div>
+      <span class="sep">:</span>
+      <div class="unit"><span class="num" id="hours">00</span><span class="label">Hours</span></div>
+      <span class="sep">:</span>
+      <div class="unit"><span class="num" id="minutes">00</span><span class="label">Minutes</span></div>
+      <span class="sep">:</span>
+      <div class="unit"><span class="num" id="seconds">00</span><span class="label">Seconds</span></div>
+    </div>
+
+    <div class="arrived" id="arrived">
+      <div class="peace">Peace.</div>
+      <div class="poem"><p class="em">The guns are cold. The morning is ours.<br/>Somewhere, a child sleeps through the silence.</p></div>
+    </div>
+
+    <div class="poem">
+      <p>For a thousand years we counted the dead.<br/>
+      Tonight, for once, we count the <span class="redword">hours</span> instead &mdash;<br/>
+      <span class="em">down to the last, when the sky forgets the sound of thunder</span><br/>
+      and the wall remembers only how to bloom.</p>
+    </div>
+
+    <div class="target">Ceasefire at <b>23:00</b> &middot; 23 July 2026 &middot; Zürich time</div>
+
+    <div class="signature">&mdash; until the dawn</div>
+  </main>
+
+  <footer>Made with quiet hope &middot; The Final Countdown</footer>
+
+<script>
+  // Target: 23 July 2026, 23:00 Zurich time (CEST = UTC+2 in July)
+  var TARGET = new Date("2026-07-23T23:00:00+02:00").getTime();
+
+  var els = {
+    days: document.getElementById("days"),
+    hours: document.getElementById("hours"),
+    minutes: document.getElementById("minutes"),
+    seconds: document.getElementById("seconds")
+  };
+  var last = { days:"", hours:"", minutes:"", seconds:"" };
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+
+  function render(){
+    var now = Date.now();
+    var diff = TARGET - now;
+
+    if (diff <= 0){
+      document.body.classList.add("done");
+      setText("days","00"); setText("hours","00");
+      setText("minutes","00"); setText("seconds","00");
+      return true;
+    }
+
+    var s = Math.floor(diff / 1000);
+    var days = Math.floor(s / 86400);
+    var hours = Math.floor((s % 86400) / 3600);
+    var minutes = Math.floor((s % 3600) / 60);
+    var seconds = s % 60;
+
+    setText("days", pad(days));
+    setText("hours", pad(hours));
+    setText("minutes", pad(minutes));
+    setText("seconds", pad(seconds));
+    return false;
+  }
+
+  function setText(key, val){
+    if (last[key] === val) return;
+    last[key] = val;
+    var el = els[key];
+    el.textContent = val;
+    el.classList.remove("tick");
+    // force reflow so the animation can replay
+    void el.offsetWidth;
+    el.classList.add("tick");
+  }
+
+  var timer = setInterval(function(){
+    if (render()) clearInterval(timer);
+  }, 1000);
+  render();
+
+  // ---- Ambient embers rising from the horizon ----
+  (function(){
+    var box = document.getElementById("embers");
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var N = 26;
+    for (var i = 0; i < N; i++){
+      var e = document.createElement("div");
+      e.className = "ember";
+      var x = Math.random() * 100;
+      var dur = 9 + Math.random() * 12;
+      var delay = -Math.random() * dur;
+      var size = 2 + Math.random() * 3;
+      var drift = (Math.random() * 120 - 60) + "px";
+      e.style.left = x + "vw";
+      e.style.width = e.style.height = size + "px";
+      e.style.animationDuration = dur + "s";
+      e.style.animationDelay = delay + "s";
+      e.style.setProperty("--drift", drift);
+      if (Math.random() > 0.6) e.style.background = "#e63030", e.style.boxShadow = "0 0 6px rgba(230,48,48,.7)";
+      box.appendChild(e);
+    }
+  })();
+
+  // ---- Paint drips along the top edge ----
+  (function(){
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var stage = document.querySelector(".stage");
+    var positions = [8, 22, 41, 63, 78, 91];
+    positions.forEach(function(p, i){
+      var d = document.createElement("div");
+      d.className = "drip";
+      d.style.left = p + "%";
+      d.style.height = (40 + Math.random() * 90) + "px";
+      d.style.animationDelay = (i * 0.9) + "s";
+      d.style.animationDuration = (4 + Math.random() * 4) + "s";
+      stage.appendChild(d);
+    });
+  })();
+</script>
+</body>
+</html>
